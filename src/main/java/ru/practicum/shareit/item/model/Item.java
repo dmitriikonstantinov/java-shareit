@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
+import ru.practicum.shareit.user.User;
 
 /**
  * TODO Sprint add-controllers.
@@ -10,7 +11,7 @@ public class Item {
     private Long id;
     private String name;
     private String description;
-    private Long owner;
+    private User owner;
     private Boolean available;
 
 }

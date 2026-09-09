@@ -44,9 +44,7 @@ public class InMemoryItemRepository implements ItemRepository {
 
     @Override
     public List<Item> searchByText(String text) {
-        if (text == null || text.isBlank()) {
-            return Collections.emptyList();
-        }
+
         String lower = text.trim().toLowerCase();
         return items.values().stream().filter(Item::getAvailable)
                 .filter(item -> item.getName().toLowerCase().contains(lower) ||

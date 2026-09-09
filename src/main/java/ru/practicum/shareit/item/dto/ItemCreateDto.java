@@ -1,14 +1,11 @@
-package ru.practicum.shareit.request.dto;
+package ru.practicum.shareit.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Data
-public class ItemRequestDto {
+public class ItemCreateDto {
     @NotBlank(message = "Название не может быть пустым")
     private String name;
 
