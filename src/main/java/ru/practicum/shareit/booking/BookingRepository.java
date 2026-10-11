@@ -33,4 +33,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findNextBooking(@Param("itemId") Long itemId,
                                   @Param("now") LocalDateTime now,
                                   Pageable pageable);
+
+    @Query("SELECT COUNT(b) > 0 FROM Booking b " +
+            "WHERE b.booker.id = :userId " +
+            "AND b.item.id = :itemId " +
+            "AND b.status = :status")
+    boolean existsApprovedBooking(@Param("userId") Long userId,
+                                  @Param("itemId") Long itemId,
+                                  @Param("status") BookingStatus status);
 }

@@ -131,23 +131,7 @@ public class ItemServiceImp implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
 
-        System.out.println("=== addComment ===");
-        System.out.println("userId: " + userId);
-        System.out.println("itemId: " + itemId);
-        List<Booking> bookerBookings = bookingRepository.findByBookerIdOrderByStartDesc(userId);
-        System.out.println("bookerBookings size: " + bookerBookings.size());
-        for (Booking b : bookerBookings) {
-            System.out.println("Booking: id=" + b.getId()
-                    + ", itemId=" + (b.getItem() != null ? b.getItem().getId() : "null")
-                    + ", status=" + b.getStatus());
-        }
-
-        boolean hasApprovedBooking = bookingRepository
-                .findByBookerIdOrderByStartDesc(userId).stream()
-                .anyMatch(b -> b.getItem().getId().equals(itemId)
-                        && b.getStatus() == BookingStatus.APPROVED);
-
-        if (!hasApprovedBooking) {
+        if (!bookingRepository.existsApprovedBooking(userId, itemId, BookingStatus.APPROVED)) {
             throw new ValidationException("Оставить отзыв можно только после аренды");
         }
 
@@ -158,9 +142,7 @@ public class ItemServiceImp implements ItemService {
         comment.setCreated(LocalDateTime.now());
 
         Comment saved = commentRepository.save(comment);
-        saved.setAuthor(author);
-
-        return CommentMapper.toCommentDto(commentRepository.save(comment));
+        return CommentMapper.toCommentDto(saved);
     }
 
 }
