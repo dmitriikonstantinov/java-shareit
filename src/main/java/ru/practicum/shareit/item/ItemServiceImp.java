@@ -131,8 +131,8 @@ public class ItemServiceImp implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
 
-        if (!bookingRepository.existsApprovedBooking(userId, itemId, BookingStatus.APPROVED)) {
-            throw new ValidationException("Оставить отзыв можно только после аренды");
+        if (!bookingRepository.existsApprovedBooking(userId, itemId, BookingStatus.APPROVED, LocalDateTime.now())) {
+            throw new ValidationException("Оставить отзыв можно только после завершения аренды");
         }
 
         Comment comment = new Comment();
