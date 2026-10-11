@@ -18,6 +18,10 @@ target/
 *.iws
 *.iml
 *.ipr
+*.swp
+*.swo
+*~
+.DS_Store
 
 ### NetBeans ###
 /nbproject/private/
@@ -31,3 +35,25 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Логи и БД ###
+*.log
+logs/
+*.db
+*.h2.db
+*.mv.db
+*.trace.db
+
+### Локальные конфиги ###
+application-local.properties
+application-dev.properties
+*.secret.*
+*.local.*
+*.dev.*
+
+### Maven ###
+.m2/
+
+### Docker ###
+docker-compose.override.yml
+*.env
