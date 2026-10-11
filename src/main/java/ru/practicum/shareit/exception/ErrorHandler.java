@@ -20,7 +20,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidation(MethodArgumentNotValidException e) {
+    public Map<String, String> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
         return Map.of("error", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     }
 
@@ -33,6 +33,12 @@ public class ErrorHandler {
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleForbidden(ForbiddenException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidation(ValidationException e) {
         return new ErrorResponse(e.getMessage());
     }
 }
