@@ -37,18 +37,17 @@ public class BookingServiceImpl implements BookingService {
         if (item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("Владелец не может бронировать свою вещь");
         }
-        if (bookingCreateDto.getStart() == null || bookingCreateDto.getEnd() == null
-                || bookingCreateDto.getStart().isAfter(bookingCreateDto.getEnd())
-                || bookingCreateDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Некорректные даты бронирования");
+        if (bookingRepository.existsOverlappingBooking(
+                item.getId(),
+                bookingCreateDto.getStart(),
+                bookingCreateDto.getEnd())) {
+            throw new ValidationException("Вещь уже забронирована на эти даты");
+        }
+        if (bookingCreateDto.getStart().isAfter(bookingCreateDto.getEnd())) {
+            throw new ValidationException("Дата начала не может быть позже даты окончания");
         }
 
-        Booking booking = new Booking();
-        booking.setStart(bookingCreateDto.getStart());
-        booking.setEnd(bookingCreateDto.getEnd());
-        booking.setItem(item);
-        booking.setBooker(booker);
-        booking.setStatus(BookingStatus.WAITING);
+        Booking booking = BookingMapper.toBooking(bookingCreateDto, item, booker);
 
         Booking saved = bookingRepository.save(booking);
         return BookingMapper.toBookingDto(saved);
@@ -83,7 +82,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getUserBookings(Long userId, String state) {
+    public List<BookingDto> getUserBookings(Long userId, BookingState state) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         List<Booking> bookings = bookingRepository.findByBookerIdOrderByStartDesc(userId);
@@ -93,7 +92,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getOwnerBookings(Long userId, String state) {
+    public List<BookingDto> getOwnerBookings(Long userId, BookingState state) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         List<Booking> bookings = bookingRepository.findByItemOwnerIdOrderByStartDesc(userId);
@@ -102,26 +101,26 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
-    private List<Booking> filterByState(List<Booking> bookings, String state) {
+    private List<Booking> filterByState(List<Booking> bookings, BookingState state) {
         LocalDateTime now = LocalDateTime.now();
-        switch (state.toUpperCase()) {
-            case "CURRENT":
+        switch (state) {
+            case CURRENT:
                 return bookings.stream()
                         .filter(b -> b.getStart().isBefore(now) && b.getEnd().isAfter(now))
                         .collect(Collectors.toList());
-            case "PAST":
+            case PAST:
                 return bookings.stream()
                         .filter(b -> b.getEnd().isBefore(now))
                         .collect(Collectors.toList());
-            case "FUTURE":
+            case FUTURE:
                 return bookings.stream()
                         .filter(b -> b.getStart().isAfter(now))
                         .collect(Collectors.toList());
-            case "WAITING":
+            case WAITING:
                 return bookings.stream()
                         .filter(b -> b.getStatus() == BookingStatus.WAITING)
                         .collect(Collectors.toList());
-            case "REJECTED":
+            case REJECTED:
                 return bookings.stream()
                         .filter(b -> b.getStatus() == BookingStatus.REJECTED)
                         .collect(Collectors.toList());

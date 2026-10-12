@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -20,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,27 +58,44 @@ public class ItemServiceImp implements ItemService {
 
     @Override
     public List<ItemDto> getAll(Long userId) {
+        List<Item> items = itemRepository.findByOwnerId(userId);
+        if (items.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> itemIds = items.stream().map(Item::getId).toList();
+
+        Map<Long, List<Comment>> commentsByItemId = commentRepository
+                .findByItemIdIn(itemIds).stream()
+                .collect(Collectors.groupingBy(c -> c.getItem().getId()));
+
+        Map<Long, List<Booking>> bookingsByItemId = bookingRepository
+                .findAllByItemIdsAndApproved(itemIds).stream()
+                .collect(Collectors.groupingBy(b -> b.getItem().getId()));
+
         LocalDateTime now = LocalDateTime.now();
-        return itemRepository.findByOwnerId(userId).stream()
+        return items.stream()
                 .map(item -> {
                     ItemDto dto = ItemMapper.toItemDto(item);
+
                     dto.setComments(
-                            commentRepository.findByItemId(item.getId()).stream()
+                            commentsByItemId.getOrDefault(item.getId(), Collections.emptyList()).stream()
                                     .map(CommentMapper::toCommentDto)
                                     .collect(Collectors.toList())
                     );
 
-                    List<Booking> lastBookings = bookingRepository.findLastBooking(
-                            item.getId(), now, PageRequest.of(0, 1));
-                    if (!lastBookings.isEmpty()) {
-                        dto.setLastBooking(lastBookings.get(0).getEnd());
-                    }
+                    List<Booking> itemBookings = bookingsByItemId
+                            .getOrDefault(item.getId(), Collections.emptyList());
 
-                    List<Booking> nextBookings = bookingRepository.findNextBooking(
-                            item.getId(), now, PageRequest.of(0, 1));
-                    if (!nextBookings.isEmpty()) {
-                        dto.setNextBooking(nextBookings.get(0).getStart());
-                    }
+                    itemBookings.stream()
+                            .filter(b -> b.getEnd().isBefore(now))
+                            .max(Comparator.comparing(Booking::getEnd))
+                            .ifPresent(b -> dto.setLastBooking(b.getEnd()));
+
+                    itemBookings.stream()
+                            .filter(b -> b.getStart().isAfter(now))
+                            .min(Comparator.comparing(Booking::getStart))
+                            .ifPresent(b -> dto.setNextBooking(b.getStart()));
 
                     return dto;
                 })
@@ -135,13 +153,9 @@ public class ItemServiceImp implements ItemService {
             throw new ValidationException("Оставить отзыв можно только после завершения аренды");
         }
 
-        Comment comment = new Comment();
-        comment.setText(commentDto.getText());
-        comment.setItem(item);
-        comment.setAuthor(author);
-        comment.setCreated(LocalDateTime.now());
-
+        Comment comment = CommentMapper.toComment(commentDto, item, author);
         Comment saved = commentRepository.save(comment);
+
         return CommentMapper.toCommentDto(saved);
     }
 
