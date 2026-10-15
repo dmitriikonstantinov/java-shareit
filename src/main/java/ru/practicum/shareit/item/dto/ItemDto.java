@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * TODO Sprint add-controllers.
  */
@@ -19,5 +22,10 @@ public class ItemDto {
 
     @NotNull(message = "Статус доступности обязателен")
     private Boolean available;
+
+    private List<CommentDto> comments;
+    private LocalDateTime lastBooking;
+    private LocalDateTime nextBooking;
+
 
 }
