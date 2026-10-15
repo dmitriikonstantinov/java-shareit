@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -41,10 +42,7 @@ public class BookingServiceImpl implements BookingService {
                 item.getId(),
                 bookingCreateDto.getStart(),
                 bookingCreateDto.getEnd())) {
-            throw new ValidationException("Вещь уже забронирована на эти даты");
-        }
-        if (bookingCreateDto.getStart().isAfter(bookingCreateDto.getEnd())) {
-            throw new ValidationException("Дата начала не может быть позже даты окончания");
+            throw new ConflictException("Вещь уже забронирована на эти даты");
         }
 
         Booking booking = BookingMapper.toBooking(bookingCreateDto, item, booker);
