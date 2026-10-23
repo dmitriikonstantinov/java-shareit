@@ -90,4 +90,14 @@ class BookingClientTest {
         var response = bookingClient.getBooking(1L, 999L);
         assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
+
+    @Test
+    void testGetBookingServerError() {
+        server.expect(requestTo("http://localhost:9090/bookings/1"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error"));
+
+        var response = bookingClient.getBooking(1L, 1L);
+        assertThat(response.getStatusCode().value()).isEqualTo(500);
+    }
 }

@@ -115,4 +115,14 @@ class ItemClientTest {
         var response = itemClient.getItem(1L, 999L);
         assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
+
+    @Test
+    void testGetItemServerError() {
+        server.expect(requestTo("http://localhost:9090/items/1"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error"));
+
+        var response = itemClient.getItem(1L, 1L);
+        assertThat(response.getStatusCode().value()).isEqualTo(500);
+    }
 }

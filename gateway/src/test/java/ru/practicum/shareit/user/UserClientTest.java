@@ -105,4 +105,14 @@ class UserClientTest {
         var response = userClient.getUser(999L);
         assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
+
+    @Test
+    void testGetUserServerError() {
+        server.expect(requestTo("http://localhost:9090/users/1"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error"));
+
+        var response = userClient.getUser(1L);
+        assertThat(response.getStatusCode().value()).isEqualTo(500);
+    }
 }
