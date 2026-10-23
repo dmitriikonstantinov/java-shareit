@@ -56,4 +56,4 @@ application-dev.properties
 
 ### Docker ###
 docker-compose.override.yml
-*.env
+*.envvolumes/
