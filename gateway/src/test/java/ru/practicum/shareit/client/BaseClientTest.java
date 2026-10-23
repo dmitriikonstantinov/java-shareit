@@ -74,4 +74,24 @@ class BaseClientTest {
         var response = baseClient.get("http://localhost:9090/test");
         assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
+
+    @Test
+    void testPut() {
+        server.expect(requestTo("http://localhost:9090/test"))
+                .andExpect(method(HttpMethod.PUT))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        var response = baseClient.put("http://localhost:9090/test", 1L, "body");
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
+
+    @Test
+    void testDeleteWithError() {
+        server.expect(requestTo("http://localhost:9090/test"))
+                .andExpect(method(HttpMethod.DELETE))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND).body("Not found"));
+
+        var response = baseClient.delete("http://localhost:9090/test");
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
+    }
 }
