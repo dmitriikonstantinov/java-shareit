@@ -97,7 +97,7 @@ class BaseClientTest {
 
     @Test
     void testGetWithParams() {
-        server.expect(requestTo("http://localhost:9090/test?param=value"))
+        server.expect(requestTo("/test?param=value"))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
