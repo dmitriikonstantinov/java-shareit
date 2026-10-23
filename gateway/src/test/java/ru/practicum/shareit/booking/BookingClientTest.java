@@ -100,4 +100,14 @@ class BookingClientTest {
         var response = bookingClient.getBooking(1L, 1L);
         assertThat(response.getStatusCode().value()).isEqualTo(500);
     }
+
+    @Test
+    void testApproveBookingForbidden() {
+        server.expect(requestTo("http://localhost:9090/bookings/1?approved=true"))
+                .andExpect(method(HttpMethod.PATCH))
+                .andRespond(withStatus(HttpStatus.FORBIDDEN).body("Forbidden"));
+
+        var response = bookingClient.approveBooking(1L, 1L, true);
+        assertThat(response.getStatusCode().value()).isEqualTo(403);
+    }
 }

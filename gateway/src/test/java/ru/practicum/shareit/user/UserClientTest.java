@@ -115,4 +115,17 @@ class UserClientTest {
         var response = userClient.getUser(1L);
         assertThat(response.getStatusCode().value()).isEqualTo(500);
     }
+
+    @Test
+    void testUpdateUserNotFound() {
+        UserDto dto = new UserDto();
+        dto.setName("Новое имя");
+
+        server.expect(requestTo("http://localhost:9090/users/999"))
+                .andExpect(method(HttpMethod.PATCH))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND).body("Not found"));
+
+        var response = userClient.updateUser(999L, dto);
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
+    }
 }

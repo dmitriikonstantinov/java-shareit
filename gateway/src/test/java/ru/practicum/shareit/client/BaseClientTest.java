@@ -94,4 +94,14 @@ class BaseClientTest {
         var response = baseClient.delete("http://localhost:9090/test");
         assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
+
+    @Test
+    void testGetWithParams() {
+        server.expect(requestTo("http://localhost:9090/test?param=value"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        var response = baseClient.get("/test?param={param}", 1L, java.util.Map.of("param", "value"));
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
 }
