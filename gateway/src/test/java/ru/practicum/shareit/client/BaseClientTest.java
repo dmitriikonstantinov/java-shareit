@@ -2,6 +2,7 @@ package ru.practicum.shareit.client;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,7 +29,7 @@ class BaseClientTest {
     void testGet() {
         server.expect(requestTo("http://localhost:9090/test"))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("OK", MediaType.TEXT_PLAIN));
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
         var response = baseClient.get("http://localhost:9090/test");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -38,7 +39,7 @@ class BaseClientTest {
     void testPost() {
         server.expect(requestTo("http://localhost:9090/test"))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("OK", MediaType.TEXT_PLAIN));
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
         var response = baseClient.post("http://localhost:9090/test", "body");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -48,7 +49,7 @@ class BaseClientTest {
     void testPatch() {
         server.expect(requestTo("http://localhost:9090/test"))
                 .andExpect(method(HttpMethod.PATCH))
-                .andRespond(withSuccess("OK", MediaType.TEXT_PLAIN));
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
         var response = baseClient.patch("http://localhost:9090/test", "body");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
