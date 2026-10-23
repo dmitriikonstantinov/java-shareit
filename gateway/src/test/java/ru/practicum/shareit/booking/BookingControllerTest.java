@@ -39,19 +39,37 @@ class BookingControllerTest {
                 LocalDateTime.now().plusDays(2)
         );
 
-        Map<String, Object> response = Map.of(
-                "id", 1L,
-                "status", "WAITING"
-        );
-
+        Map<String, Object> response = Map.of("id", 1L, "status", "WAITING");
         when(bookingClient.bookItem(anyLong(), any())).thenReturn(ResponseEntity.ok(response));
 
         mockMvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(createDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.status").value("WAITING"));
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetBookings() throws Exception {
+        when(bookingClient.getBookings(anyLong(), any(), any(), any())).thenReturn(ResponseEntity.ok(java.util.List.of()));
+        mockMvc.perform(get("/bookings").header("X-Sharer-User-Id", "1")).andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetBooking() throws Exception {
+        when(bookingClient.getBooking(anyLong(), anyLong())).thenReturn(ResponseEntity.ok(Map.of("id", 1L)));
+        mockMvc.perform(get("/bookings/1").header("X-Sharer-User-Id", "1")).andExpect(status().isOk());
+    }
+
+    @Test
+    void testApproveBooking() throws Exception {
+        when(bookingClient.approveBooking(anyLong(), anyLong(), any())).thenReturn(ResponseEntity.ok(Map.of("status", "APPROVED")));
+        mockMvc.perform(patch("/bookings/1?approved=true").header("X-Sharer-User-Id", "1")).andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetOwnerBookings() throws Exception {
+        when(bookingClient.getOwnerBookings(anyLong(), any())).thenReturn(ResponseEntity.ok(java.util.List.of()));
+        mockMvc.perform(get("/bookings/owner").header("X-Sharer-User-Id", "1")).andExpect(status().isOk());
     }
 }

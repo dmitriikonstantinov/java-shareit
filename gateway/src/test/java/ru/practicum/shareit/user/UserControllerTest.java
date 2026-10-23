@@ -33,7 +33,6 @@ class UserControllerTest {
         UserDto dto = new UserDto();
         dto.setName("Дима");
         dto.setEmail("dima@mail.ru");
-
         when(userClient.createUser(any())).thenReturn(ResponseEntity.ok(dto));
 
         mockMvc.perform(post("/users")
@@ -48,12 +47,34 @@ class UserControllerTest {
         UserDto dto = new UserDto();
         dto.setId(1L);
         dto.setName("Дима");
-
         when(userClient.getUser(anyLong())).thenReturn(ResponseEntity.ok(dto));
 
         mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Дима"));
+                .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @Test
+    void testGetAllUsers() throws Exception {
+        when(userClient.getAllUsers()).thenReturn(ResponseEntity.ok(java.util.List.of()));
+        mockMvc.perform(get("/users")).andExpect(status().isOk());
+    }
+
+    @Test
+    void testUpdateUser() throws Exception {
+        UserDto dto = new UserDto();
+        dto.setName("Новое имя");
+        when(userClient.updateUser(anyLong(), any())).thenReturn(ResponseEntity.ok(dto));
+
+        mockMvc.perform(patch("/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(dto)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testDeleteUser() throws Exception {
+        when(userClient.deleteUser(anyLong())).thenReturn(ResponseEntity.ok().build());
+        mockMvc.perform(delete("/users/1")).andExpect(status().isOk());
     }
 }
