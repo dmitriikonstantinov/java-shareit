@@ -104,4 +104,48 @@ class BaseClientTest {
         var response = baseClient.get("/test?param={param}", 1L, java.util.Map.of("param", "value"));
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
+
+    @Test
+    void testGetWithUserIdAndParams() {
+        server.expect(requestTo("/test?param=value"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header("X-Sharer-User-Id", "1"))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        var response = baseClient.get("/test?param={param}", 1L, java.util.Map.of("param", "value"));
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
+
+    @Test
+    void testPostWithUserIdAndParams() {
+        server.expect(requestTo("/test?param=value"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("X-Sharer-User-Id", "1"))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        var response = baseClient.post("/test?param={param}", 1L, java.util.Map.of("param", "value"), "body");
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
+
+    @Test
+    void testPatchWithUserIdAndParams() {
+        server.expect(requestTo("/test?param=value"))
+                .andExpect(method(HttpMethod.PATCH))
+                .andExpect(header("X-Sharer-User-Id", "1"))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        var response = baseClient.patch("/test?param={param}", 1L, java.util.Map.of("param", "value"), "body");
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
+
+    @Test
+    void testDeleteWithUserIdAndParams() {
+        server.expect(requestTo("/test?param=value"))
+                .andExpect(method(HttpMethod.DELETE))
+                .andExpect(header("X-Sharer-User-Id", "1"))
+                .andRespond(withSuccess());
+
+        var response = baseClient.delete("/test?param={param}", 1L, java.util.Map.of("param", "value"));
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
 }
