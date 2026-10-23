@@ -27,7 +27,7 @@ class BaseClientTest {
 
     @Test
     void testGet() {
-        server.expect(requestTo("http://localhost:9090/test"))
+        server.expect(requestTo("/test"))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
@@ -37,7 +37,7 @@ class BaseClientTest {
 
     @Test
     void testPost() {
-        server.expect(requestTo("http://localhost:9090/test"))
+        server.expect(requestTo("/test"))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
@@ -47,7 +47,7 @@ class BaseClientTest {
 
     @Test
     void testPatch() {
-        server.expect(requestTo("http://localhost:9090/test"))
+        server.expect(requestTo("/test"))
                 .andExpect(method(HttpMethod.PATCH))
                 .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
@@ -57,7 +57,7 @@ class BaseClientTest {
 
     @Test
     void testDelete() {
-        server.expect(requestTo("http://localhost:9090/test"))
+        server.expect(requestTo("/test"))
                 .andExpect(method(HttpMethod.DELETE))
                 .andRespond(withSuccess());
 
@@ -67,7 +67,7 @@ class BaseClientTest {
 
     @Test
     void testGetWithError() {
-        server.expect(requestTo("http://localhost:9090/test"))
+        server.expect(requestTo("/test"))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND).body("Not found"));
 
@@ -77,7 +77,7 @@ class BaseClientTest {
 
     @Test
     void testPut() {
-        server.expect(requestTo("http://localhost:9090/test"))
+        server.expect(requestTo("/test"))
                 .andExpect(method(HttpMethod.PUT))
                 .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
@@ -87,7 +87,7 @@ class BaseClientTest {
 
     @Test
     void testDeleteWithError() {
-        server.expect(requestTo("http://localhost:9090/test"))
+        server.expect(requestTo("/test"))
                 .andExpect(method(HttpMethod.DELETE))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND).body("Not found"));
 
