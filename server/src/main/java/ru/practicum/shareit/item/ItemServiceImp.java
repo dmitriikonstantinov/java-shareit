@@ -156,19 +156,10 @@ public class ItemServiceImp implements ItemService {
     @Override
     @Transactional
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
-        System.out.println("=== addComment ===");
-        System.out.println("Серверное время: " + LocalDateTime.now());
-        System.out.println("userId: " + userId);
-        System.out.println("itemId: " + itemId);
         User author = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
-
-        System.out.println("Серверное время: " + LocalDateTime.now());
-        System.out.println("Бронь: " + bookingRepository.findByBookerIdOrderByStartDesc(userId).stream()
-                .filter(b -> b.getItem().getId().equals(itemId))
-                .findFirst().orElse(null));
 
         if (!bookingRepository.existsApprovedBooking(userId, itemId, BookingStatus.APPROVED,
                 LocalDateTime.now())) {
