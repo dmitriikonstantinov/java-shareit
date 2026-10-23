@@ -83,11 +83,11 @@ class ItemClientTest {
 
     @Test
     void testSearchItems() {
-        server.expect(requestTo("http://localhost:9090/items/search?text=дрель"))
+        server.expect(requestTo("http://localhost:9090/items/search?text=drill"))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
 
-        var response = itemClient.searchItems(1L, "дрель");
+        var response = itemClient.searchItems(1L, "drill");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
