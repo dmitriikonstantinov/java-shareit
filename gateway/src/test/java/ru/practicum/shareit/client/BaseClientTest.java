@@ -31,7 +31,7 @@ class BaseClientTest {
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
-        var response = baseClient.get("http://localhost:9090/test");
+        var response = baseClient.get("/test");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
@@ -41,7 +41,7 @@ class BaseClientTest {
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
-        var response = baseClient.post("http://localhost:9090/test", "body");
+        var response = baseClient.post("/test", "body");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
@@ -51,7 +51,7 @@ class BaseClientTest {
                 .andExpect(method(HttpMethod.PATCH))
                 .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
-        var response = baseClient.patch("http://localhost:9090/test", "body");
+        var response = baseClient.patch("/test", "body");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
@@ -61,7 +61,7 @@ class BaseClientTest {
                 .andExpect(method(HttpMethod.DELETE))
                 .andRespond(withSuccess());
 
-        var response = baseClient.delete("http://localhost:9090/test");
+        var response = baseClient.delete("/test");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
@@ -71,7 +71,7 @@ class BaseClientTest {
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND).body("Not found"));
 
-        var response = baseClient.get("http://localhost:9090/test");
+        var response = baseClient.get("/test");
         assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
 
@@ -81,7 +81,7 @@ class BaseClientTest {
                 .andExpect(method(HttpMethod.PUT))
                 .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
-        var response = baseClient.put("http://localhost:9090/test", 1L, "body");
+        var response = baseClient.put("/test", 1L, "body");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
@@ -91,7 +91,7 @@ class BaseClientTest {
                 .andExpect(method(HttpMethod.DELETE))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND).body("Not found"));
 
-        var response = baseClient.delete("http://localhost:9090/test");
+        var response = baseClient.delete("/test");
         assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
 
