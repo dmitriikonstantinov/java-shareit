@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -11,6 +12,7 @@ import ru.practicum.shareit.item.dto.ItemCreateDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(ItemClient.class)
@@ -102,5 +104,15 @@ class ItemClientTest {
 
         var response = itemClient.addComment(1L, 1L, dto);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
+
+    @Test
+    void testGetItemNotFound() {
+        server.expect(requestTo("http://localhost:9090/items/999"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND).body("Not found"));
+
+        var response = itemClient.getItem(1L, 999L);
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
 }

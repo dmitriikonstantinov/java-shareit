@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(BookingClient.class)
@@ -77,5 +79,15 @@ class BookingClientTest {
 
         var response = bookingClient.getOwnerBookings(1L, BookingState.ALL);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
+
+    @Test
+    void testGetBookingNotFound() {
+        server.expect(requestTo("http://localhost:9090/bookings/999"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND).body("Not found"));
+
+        var response = bookingClient.getBooking(1L, 999L);
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
 }
