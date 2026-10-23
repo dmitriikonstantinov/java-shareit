@@ -148,4 +148,24 @@ class BaseClientTest {
         var response = baseClient.delete("/test?param={param}", 1L, java.util.Map.of("param", "value"));
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
+
+    @Test
+    void testGetWithoutUserIdAndParams() {
+        server.expect(requestTo("/test"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        var response = baseClient.get("/test");
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
+
+    @Test
+    void testPostWithoutUserIdAndParams() {
+        server.expect(requestTo("/test"))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        var response = baseClient.post("/test", "body");
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
 }
