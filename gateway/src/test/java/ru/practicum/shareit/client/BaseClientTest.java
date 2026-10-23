@@ -168,4 +168,24 @@ class BaseClientTest {
         var response = baseClient.post("/test", "body");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
+
+    @Test
+    void testGetWithoutUserId() {
+        server.expect(requestTo("/test"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        var response = baseClient.get("/test");
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    }
+
+    @Test
+    void testGetWithErrorWithoutBody() {
+        server.expect(requestTo("/test"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND)); // Без body!
+
+        var response = baseClient.get("/test");
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
+    }
 }
